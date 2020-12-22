@@ -32,7 +32,6 @@ function preload() {
 
 function create() {
   let platforms;
-  let player = this.physics.add.sprite(100, 450, 'dude');
   // Criando plataforma e o background
 
   this.add.image(400, 300, 'sky');
@@ -45,7 +44,8 @@ function create() {
   platforms.create(50, 250, 'ground');
   platforms.create(750, 220, 'ground');
   // Criando o player
-
+  
+  let player = this.physics.add.sprite(100, 450, 'dude');
   player.setBounce(0.2);
   player.setCollideWorldBounds(true);
 
@@ -67,6 +67,8 @@ function create() {
     frameRate: 10,
     repeat: -1,
   });
+  player.body.setGravityY(300);
+  this.physics.add.collider(player, platforms);
 }
 
 function update() {}

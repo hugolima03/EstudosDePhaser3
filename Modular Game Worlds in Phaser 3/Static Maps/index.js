@@ -4,6 +4,7 @@ const config = {
   height: 600,
   parent: "game-container",
   pixelArt: true,
+  title: "Static World",
   physics: {
     default: "arcade",
     arcade: {
@@ -71,8 +72,8 @@ function create() {
   // a bit of whitespace, so I'm using setSize & setOffset to control the size of the player's body.
   player = this.physics.add
     .sprite(spawnPoint.x, spawnPoint.y, "atlas", "misa-front")
-    .setSize(30, 40)
-    .setOffset(0, 24);
+    .setSize(30, 20)
+    .setOffset(0, 44);
 
   // Watch the player and worldLayer for collisions, for the duration of the scene:
   this.physics.add.collider(player, worldLayer);

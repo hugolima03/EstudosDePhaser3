@@ -3,6 +3,7 @@ import Phaser from "../lib/phaser.js";
 export default class Game extends Phaser.Scene {
   /** @type {Phaser.Physics.Arcade.Sprite} */
   player;
+  platforms;
 
   constructor() {
     super("game");
@@ -14,23 +15,25 @@ export default class Game extends Phaser.Scene {
   }
 
   create() {
-    this.add.image(240,320, 'background');
+    this.add.image(240,320, 'background').setScrollFactor(1, 0);
     
-    const platforms = this.physics.add.staticGroup();
+    this.platforms = this.physics.add.staticGroup();
 
     for (let i = 0;i < 5;i++) {
       const x = Phaser.Math.Between(80, 400);
       const y = 150 * i
 
-      const platform = platforms.create(x, y, 'platform');
+      /** @type {Phaser.Physics.Arcade.Sprite} */
+      const platform = this.platforms.create(x, y, 'platform');
       platform.scale = 0.5;
 
+      /** @type {Phaser.Physics.Arcade.StaticBody} */
       const body = platform.body
       body.updateFromGameObject();
     }
 
     this.player = this.physics.add.sprite(240, 320, 'bunny-stand').setScale(0.5);
-    this.physics.add.collider(platforms, this.player);
+    this.physics.add.collider(this.platforms, this.player);
 
     this.player.body.checkCollision.up = false
     this.player.body.checkCollision.left = false
@@ -40,6 +43,18 @@ export default class Game extends Phaser.Scene {
   }
 
   update() {
+    this.platforms.children.iterate((child) => {
+      /** @type {Phaser.Physics.Arcade.Sprite} */
+      const platform = child;
+
+      const  scrollY = this.cameras.main.scrollY;
+      
+      if (platform.y >= scrollY + 700) {
+        platform.y = scrollY - Phaser.Math.Between(50, 100);
+        platform.body.updateFromGameObject();
+      }
+    })
+
     const touchingDown = this.player.body.touching.down;
 
     if (touchingDown) {

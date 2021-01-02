@@ -53,7 +53,6 @@ export default class Game extends Phaser.Scene {
     this.carrots = this.physics.add.group({
       classType: Carrot
     });
-    // this.carrots.get(240, 320, 'carrot')
 
     this.physics.add.collider(this.platforms, this.carrots);
 
@@ -115,6 +114,8 @@ export default class Game extends Phaser.Scene {
     const y = sprite.y - sprite.displayHeight;
 
     const carrot = this.carrots.get(sprite.x, y, 'carrot');
+    
+    carrot.body.checkCollision.up = false;
 
     carrot.setActive(true);
     carrot.setVisible(true);

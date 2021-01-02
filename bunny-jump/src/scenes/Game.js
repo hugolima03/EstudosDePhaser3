@@ -2,6 +2,7 @@ import Phaser from "../lib/phaser.js";
 
 export default class Game extends Phaser.Scene {
   /** @type {Phaser.Physics.Arcade.Sprite} */
+  cursors;
   player;
   platforms;
 
@@ -11,7 +12,9 @@ export default class Game extends Phaser.Scene {
   preload() {
     this.load.image('background', 'assets/Background/bg_layer1.png');
     this.load.image('platform', 'assets/Environment/ground_grass.png');
-    this.load.image('bunny-stand', 'assets/Players/bunny1_stand.png')
+    this.load.image('bunny-stand', 'assets/Players/bunny1_stand.png');
+
+    this.cursors = this.input.keyboard.createCursorKeys();
   }
 
   create() {
@@ -42,7 +45,7 @@ export default class Game extends Phaser.Scene {
     this.cameras.main.startFollow(this.player);
   }
 
-  update() {
+  update(t, dt) {
     this.platforms.children.iterate((child) => {
       /** @type {Phaser.Physics.Arcade.Sprite} */
       const platform = child;
@@ -59,6 +62,14 @@ export default class Game extends Phaser.Scene {
 
     if (touchingDown) {
       this.player.setVelocityY(-300)
+    }
+
+    if (this.cursors.left.isDown && !touchingDown) {
+      this.player.setVelocityX(-200);
+    } else if (this.cursors.right.isDown && !touchingDown) {
+      this.player.setVelocityX(200);
+    } else {
+      this.player.setVelocityX(0);
     }
   }
 }

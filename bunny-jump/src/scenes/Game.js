@@ -1,7 +1,9 @@
 import Phaser from "../lib/phaser.js";
+import Carrot from "../game/Carrot.js";
 
 export default class Game extends Phaser.Scene {
   /** @type {Phaser.Physics.Arcade.Sprite} */
+  /** @type {Phaser.Types.input.keyboard.CursorKeys} */
   cursors;
   player;
   platforms;
@@ -13,6 +15,7 @@ export default class Game extends Phaser.Scene {
     this.load.image("background", "assets/Background/bg_layer1.png");
     this.load.image("platform", "assets/Environment/ground_grass.png");
     this.load.image("bunny-stand", "assets/Players/bunny1_stand.png");
+    this.load.image('carrot', '../assets/Items/carrot.png');
 
     this.cursors = this.input.keyboard.createCursorKeys();
   }
@@ -46,6 +49,21 @@ export default class Game extends Phaser.Scene {
 
     this.cameras.main.startFollow(this.player);
     this.cameras.main.setDeadzone(this.scale.width * 1.5);
+
+    this.carrots = this.physics.add.group({
+      classType: Carrot
+    });
+    // this.carrots.get(240, 320, 'carrot')
+
+    this.physics.add.collider(this.platforms, this.carrots);
+
+    this.physics.add.overlap(
+      this.player,
+      this.carrots,
+      this.handleCollectCarrot,
+      undefined,
+      this
+    );
   }
 
   update(t, dt) {
@@ -58,13 +76,16 @@ export default class Game extends Phaser.Scene {
       if (platform.y >= scrollY + 700) {
         platform.y = scrollY - Phaser.Math.Between(50, 100);
         platform.body.updateFromGameObject();
+
+        // Create a carrot above the platform being reused
+        this.addCarrotAbove(platform);
       }
     });
 
     const touchingDown = this.player.body.touching.down;
 
     if (touchingDown) {
-      this.player.setVelocityY(-300);
+      this.player.setVelocityY(-500);
     }
 
     if (this.cursors.left.isDown && !touchingDown) {
@@ -88,5 +109,28 @@ export default class Game extends Phaser.Scene {
     } else if (sprite.x > gameWidth + halfWidth) {
       sprite.x = -halfWidth;
     }
+  }
+
+  addCarrotAbove(sprite) {
+    const y = sprite.y - sprite.displayHeight;
+
+    const carrot = this.carrots.get(sprite.x, y, 'carrot');
+
+    carrot.setActive(true);
+    carrot.setVisible(true);
+
+    this.add.existing(carrot);
+
+    carrot.body.setSize(carrot.width, carrot.height);
+
+    this.physics.world.enable(carrot);
+
+    return carrot
+  }
+
+  handleCollectCarrot(player, carrot) {
+    this.carrots.killAndHide(carrot);
+
+    this.physics.world.disableBody(carrot.body);
   }
 }

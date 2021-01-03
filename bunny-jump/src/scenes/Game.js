@@ -1,14 +1,24 @@
 import Phaser from "../lib/phaser.js";
+
 import Carrot from "../game/Carrot.js";
 
 export default class Game extends Phaser.Scene {
-  /** @type {Phaser.Physics.Arcade.Sprite} */
-  /** @type {Phaser.Types.input.keyboard.CursorKeys} */
-  carrotsCollected = 0;
-  carrotsCollectedText;
-  cursors;
-  player;
+  /** @type {Phaser.Physics.Arcade.StaticGroup} */
   platforms;
+
+  /** @type {Phaser.Physics.Arcade.Sprite} */
+  player;
+
+  /** @type {Phaser.Types.Input.Keyboard.CursorKeys} */
+  cursors;
+
+  /** @type {Phaser.Physics.Arcade.Group} */
+  carrots;
+
+  carrotsCollected = 0;
+
+  /** @type {Phaser.GameObjects.Text} */
+  carrotsCollectedText;
 
   constructor() {
     super("game");
@@ -100,15 +110,15 @@ export default class Game extends Phaser.Scene {
     if (touchingDown) {
       this.player.setVelocityY(-500);
 
-      this.player.setTexture('bunny-jump');
+      this.player.setTexture("bunny-jump");
 
-      this.sound.play('jump');
+      this.sound.play("jump");
     }
 
     const vy = this.player.body.velocity.y;
 
-    if (vy > 0 && this.player.texture.key !== 'bunny-stand') {
-      this.player.setTexture('bunny-stand');
+    if (vy > 0 && this.player.texture.key !== "bunny-stand") {
+      this.player.setTexture("bunny-stand");
     }
 
     if (this.cursors.left.isDown && !touchingDown) {
@@ -124,9 +134,10 @@ export default class Game extends Phaser.Scene {
 
     const bottomPlatform = this.findBottomMostPlatform();
     if (this.player.y > bottomPlatform.y + 200) {
-      this.scene.start('game-over');
+      this.scene.start("game-over");
     }
   }
+
   /** @param {Phaser.GameObjects.Sprite} sprite*/
 
   horizontalWrap(sprite) {
@@ -139,9 +150,12 @@ export default class Game extends Phaser.Scene {
     }
   }
 
+  /** @param {Phaser.GameObjects.Sprite} sprite */
+
   addCarrotAbove(sprite) {
     const y = sprite.y - sprite.displayHeight;
 
+    /** @type {Phaser.Physics.Arcade.Sprite} */
     const carrot = this.carrots.get(sprite.x, y, "carrot");
 
     carrot.body.checkCollision.up = false;
@@ -157,6 +171,11 @@ export default class Game extends Phaser.Scene {
 
     return carrot;
   }
+
+  /**
+	 * @param {Phaser.Physics.Arcade.Sprite} player 
+	 * @param {Carrot} carrot 
+	 */
 
   handleCollectCarrot(player, carrot) {
     this.carrots.killAndHide(carrot);

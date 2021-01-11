@@ -26,6 +26,15 @@ let bombs;
 var game = new Phaser.Game(config);
 
 function preload() {
+  this.load.image(
+    "tiles",
+    "../assets/tilesets/0x72-industrial-tileset-32px-extruded.png"
+  );
+  this.load.tilemapTiledJSON(
+    "map",
+    "../assets/tilemaps/platformer-simple.json"
+  );
+
   this.load.image("sky", "assets/sky.png");
   this.load.image("ground", "assets/platform.png");
   this.load.image("star", "assets/star.png");
